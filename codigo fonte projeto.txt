@@ -1,0 +1,126 @@
+int temperatura;
+int fahre;
+const int botao = 10;
+// Arduino pins connected to the 4511
+const uint8_t LedA = 5;
+const uint8_t LedB = 8;
+const uint8_t LedC = 7;
+const uint8_t LedD = 6;
+const uint8_t LeA = 9;
+
+// Arduino pins connected to the segment driver transistors
+const uint8_t Led1 = 13;
+const uint8_t Led2 = 2;
+const uint8_t Led3 = 3;
+const uint8_t Led4 = 4;
+const int A = 11;
+const int B = 12;
+const int C = 15;
+const int D = 16;
+const int E = 17;
+const int F = 18;
+const int G = 19;
+void setup()
+{
+  // Let the Arduino know which pins go where
+  pinMode(LedA, OUTPUT);
+  pinMode(LedB, OUTPUT);
+  pinMode(LedC, OUTPUT);
+  pinMode(LedD, OUTPUT);
+  pinMode(LeA, OUTPUT);
+ 
+  pinMode(Led1, OUTPUT);
+  pinMode(Led2, OUTPUT);
+  pinMode(Led3, OUTPUT);
+  pinMode(Led4, OUTPUT);
+  pinMode(A, OUTPUT);
+  pinMode(B, OUTPUT);
+  pinMode(C, OUTPUT);
+  pinMode(D, OUTPUT);
+  pinMode(E, OUTPUT);
+  pinMode(F, OUTPUT);
+  pinMode(G, OUTPUT);
+  pinMode(botao, INPUT_PULLUP);
+
+  
+  digitalWrite(Led1, LOW);
+  digitalWrite(Led2, LOW);
+  digitalWrite(Led3, LOW);
+  digitalWrite(Led4, LOW);
+ 
+  Serial.begin(9600);
+
+}
+
+void loop()
+{
+temperatura = -40 + 0.488155 * (analogRead(A0) - 20);
+ if (digitalRead(botao) == LOW) {	
+  	print_numero(temperatura);
+   digitalWrite(A, HIGH);
+   digitalWrite(F, HIGH);
+   digitalWrite(E, HIGH);
+   digitalWrite(D, HIGH);
+   digitalWrite(C, LOW);
+   digitalWrite(B, LOW);
+   digitalWrite(G, LOW);
+   	
+ }else{
+ fahre = (temperatura * 9.0 / 5.0) + 32.0;
+   print_numero(fahre);
+   digitalWrite(A, HIGH);
+   digitalWrite(B, LOW);
+   digitalWrite(C, LOW);
+   digitalWrite(D, LOW);
+   digitalWrite(F, HIGH);
+   digitalWrite(E, HIGH);
+   digitalWrite(G, HIGH);
+ }
+
+  
+}
+void print_numero(unsigned i) {
+  static int l = 2;
+  
+  set_digito(Led4, l, i/100 % 10 );
+  set_digito(Led3, l, i/10 );
+  set_digito(Led2, l, i/1  );
+}
+
+
+
+void set_digito(const uint8_t sec, const unsigned l, const unsigned value) {
+  set_numero(value);
+  digitalWrite(sec, HIGH);
+  delay(l);
+  digitalWrite(sec, LOW);
+}
+
+
+void set_numero(const unsigned i) {
+  static const struct numero {
+    uint8_t d;
+    uint8_t c;
+    uint8_t b;
+    uint8_t a;
+  } numeros[] = {
+    { LOW,  LOW,  LOW,  LOW}, /* 0 */
+    { LOW,  LOW,  LOW, HIGH}, /* 1 */
+    { LOW,  LOW, HIGH,  LOW}, /* 2 */
+    { LOW,  LOW, HIGH, HIGH}, /* 3 */
+    { LOW, HIGH,  LOW,  LOW}, /* 4 */
+    { LOW, HIGH,  LOW, HIGH}, /* 5 */
+    { LOW, HIGH, HIGH,  LOW}, /* 6 */
+    { LOW, HIGH, HIGH, HIGH}, /* 7 */
+    {HIGH,  LOW,  LOW,  LOW}, /* 8 */
+    {HIGH,  LOW,  LOW, HIGH}, /* 9 */
+  };
+  
+  digitalWrite(LedA, numeros[i%10].a);
+  digitalWrite(LedB, numeros[i%10].b);
+  digitalWrite(LedC, numeros[i%10].c);
+  digitalWrite(LedD, numeros[i%10].d);
+
+}
+
+  
